@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WorldPulse - Global Intelligence Wire</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+</head>
+<body class="light-theme">
+
+  <!-- Top Announcement Bar -->
+  <div class="top-announcement-bar">
+    <div class="announcement-wrapper">
+      <span class="live-wire-tag">LIVE INTELLIGENCE WIRE</span>
+      <div class="ticker-marquee" id="tickerText">
+        Fetching real-time global news coverage...
+      </div>
+    </div>
+  </div>
+
+  <!-- Primary Header Navigation -->
+  <header class="site-header">
+    <div class="header-container">
+      <div class="brand-logo">
+        <span class="logo-mark">⚡</span>
+        <div class="brand-info">
+          <span class="brand-name">WorldPulse <span class="brand-badge">WIRE</span></span>
+          <span class="brand-tagline">Real-Time Global News & Verified Intelligence</span>
+        </div>
+      </div>
+
+      <!-- Controls & Live Indicator -->
+      <div class="header-actions">
+        <div class="orchestra-status-pill">
+          <span class="pulse-indicator"></span>
+          <span id="orchestraStatusLabel">LIVE WIRE UPDATED</span>
+        </div>
+
+        <div class="lang-select-wrapper">
+          <span class="globe-icon">🌐</span>
+          <select id="langSelect" class="styled-select">
+            <option value="en" selected>English</option>
+            <option value="vi">Vietnamese</option>
+            <option value="fr">Français</option>
+            <option value="es">Español</option>
+            <option value="ja">日本語</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Clean Hero Section with Topic Search -->
+  <section class="hero-orchestra-section">
+    <div class="hero-container">
+      
+      <div class="hero-headline">
+        <span class="section-kicker">GLOBAL INTELLIGENCE NETWORK</span>
+        <h1>Real-Time World News Wire</h1>
+        <p class="hero-description">Stay informed with verified, up-to-the-minute global coverage spanning economic markets, geopolitical developments, and environmental affairs.</p>
+      </div>
+
+      <!-- Search & Topic Query Box -->
+      <div class="query-dispatch-box">
+        <div class="input-wrapper">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="readerTopicInput" placeholder="Explore topic (e.g. Global Trade, Semiconductor Industry, Climate Policy, AI Governance...)" />
+        </div>
+        <button id="readerSearchBtn" class="btn-dispatch">
+          <span>🚀 Search News</span>
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Main Content Layout -->
+  <main class="content-wrapper">
+
+    <!-- Category Tabs & Filters -->
+    <div class="filter-toolbar">
+      <div class="topic-tabs" id="categoryTabs">
+        <button class="topic-tab active" data-cat="all">All Top Stories</button>
+        <button class="topic-tab" data-cat="economy">📊 Economy & Markets</button>
+        <button class="topic-tab" data-cat="politics">🏛️ Politics & World</button>
+        <button class="topic-tab" data-cat="weather">🌤️ Weather & Climate</button>
+      </div>
+
+      <div class="filter-controls">
+        <div class="select-box">
+          <span class="label">Region:</span>
+          <select id="regionSelect">
+            <option value="Global" selected>Global Wire</option>
+            <option value="Asia-Pacific">Asia-Pacific</option>
+            <option value="Europe">Europe</option>
+            <option value="Americas">Americas</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section Header -->
+    <div class="grid-header">
+      <div class="title-group">
+        <h2>Latest Verified Stories</h2>
+        <span class="story-count-badge" id="articleCount">0 stories</span>
+      </div>
+      <span class="refresh-indicator">Updated continuously</span>
+    </div>
+
+    <!-- Loading State -->
+    <div id="loadingSpinner" class="loading-state hidden">
+      <div class="spinner-ring"></div>
+      <span>Scouting and verifying global stories...</span>
+    </div>
+
+    <!-- Article Cards Grid -->
+    <div class="editorial-grid" id="newsGrid">
+      <!-- Dynamic Article Cards -->
+    </div>
+
+  </main>
+
+  <!-- Article Detail Modal -->
+  <div id="articleModal" class="modal-backdrop hidden">
+    <div class="modal-dialog">
+      <button class="modal-close" id="modalCloseBtn">&times;</button>
+      
+      <div class="modal-header-meta">
+        <span class="badge-cat" id="modalCategoryBadge">Economy</span>
+        <span class="badge-region" id="modalRegionTag">📍 Global</span>
+        <span class="badge-factcheck" id="modalConfidenceTag">✓ 98% Verified</span>
+      </div>
+
+      <h1 id="modalTitle" class="article-modal-title">Story Title</h1>
+      
+      <div class="article-byline">
+        <span id="modalSource" class="source-name">Source: Reuters</span> &bull; 
+        <span id="modalTime" class="time-stamp">Published recently</span>
+      </div>
+
+      <div class="tldr-highlight-box">
+        <h4>⚡ Executive Summary (TL;DR)</h4>
+        <p id="modalTldr"></p>
+      </div>
+
+      <div class="modal-body-content">
+        <h3>📌 Key Takeaways</h3>
+        <ul id="modalKeyTakeaways" class="takeaways-bullets"></ul>
+
+        <h3>🧠 Expert Domain Insights</h3>
+        <p id="modalExpertAnalysis" class="expert-analysis-p"></p>
+      </div>
+
+      <div class="modal-actions-bar">
+        <div class="modal-tags" id="modalTags"></div>
+        <button class="btn-audio" id="modalSpeechBtn">🔊 Read Story Aloud</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <p>© 2026 WorldPulse Global Intelligence Wire &bull; All Rights Reserved</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
