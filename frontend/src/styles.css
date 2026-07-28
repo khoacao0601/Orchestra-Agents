@@ -1,4 +1,4 @@
-/* WorldPulse Global Wire & Admin Command Center - Unified Styling */
+/* WorldPulse Global Wire & Admin Command Center - Unified Global Styling for Angular */
 
 :root {
   /* Reader Portal Theme Variables (Light Editorial) */
@@ -44,10 +44,7 @@
   padding: 0;
 }
 
-/* =========================================================
-   1. READER PORTAL STYLES (body.light-theme)
-   ========================================================= */
-body.light-theme {
+body {
   font-family: var(--font-sans);
   background-color: var(--bg-body);
   color: var(--text-body);
@@ -56,6 +53,7 @@ body.light-theme {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Announcement Marquee */
 .top-announcement-bar {
   background: #0f172a;
   color: #fff;
@@ -642,10 +640,6 @@ body.light-theme {
   background: var(--border-light);
 }
 
-.hidden {
-  display: none !important;
-}
-
 .site-footer {
   border-top: 1px solid var(--border-light);
   background: #ffffff;
@@ -657,18 +651,12 @@ body.light-theme {
 }
 
 /* =========================================================
-   2. ADMIN CONTROL CENTER STYLES (body.admin-body)
+   ADMIN CONTROL CENTER STYLES (body.admin-body-wrapper)
    ========================================================= */
-body.admin-body {
-  font-family: var(--font-sans);
+.admin-body-wrapper {
   background-color: #0b0f19;
   color: #f8fafc;
   min-height: 100vh;
-  line-height: 1.5;
-  background-image: 
-    radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.1) 0%, transparent 40%),
-    radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.1) 0%, transparent 40%);
-  background-attachment: fixed;
 }
 
 .admin-navbar {
@@ -736,7 +724,6 @@ body.admin-body {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: #10b981;
 }
 
 .btn {
@@ -879,7 +866,6 @@ body.admin-body {
   font-family: inherit;
 }
 
-/* Workspace Split Grid */
 .workspace-grid {
   display: grid;
   grid-template-columns: 1fr 420px;

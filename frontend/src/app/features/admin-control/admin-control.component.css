@@ -1,0 +1,47 @@
+.admin-body-wrapper {
+  font-family: var(--font-sans);
+  background-color: #0b0f19;
+  color: #f8fafc;
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+.agent-inspector-card {
+  background: rgba(30, 41, 59, 0.6);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.agent-inspector-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.avatar-icon {
+  font-size: 1.2rem;
+}
+
+.agent-name-label {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #fff;
+}
+
+.agent-type-label {
+  font-size: 0.7rem;
+  color: #94a3b8;
+}
+
+.status-pill-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}

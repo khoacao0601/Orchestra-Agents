@@ -2,6 +2,7 @@ import express from 'express';
 import { createServer } from 'http';
 import { WebSocketServer } from 'ws';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { NewsOrchestrator } from './core/NewsOrchestrator.js';
 
@@ -13,7 +14,13 @@ const server = createServer(app);
 const wss = new WebSocketServer({ server });
 
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+
+// Check if Angular production build dist exists, otherwise serve public/
+const angularDistPath = path.join(__dirname, 'frontend', 'dist', 'frontend', 'browser');
+const staticPath = fs.existsSync(angularDistPath) ? angularDistPath : path.join(__dirname, 'public');
+
+console.log(`[Server] Serving static frontend from: ${staticPath}`);
+app.use(express.static(staticPath));
 
 // Create single instance of NewsOrchestrator
 const clients = new Set();
@@ -27,19 +34,7 @@ const newsOrchestrator = new NewsOrchestrator((msg) => {
   });
 });
 
-// Explicit routes for Reader Portal & Admin Control Room
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-app.get('/admin', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'admin.html'));
-});
-
-app.get('/admin.html', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'admin.html'));
-});
-
+// REST API Endpoints
 app.get('/api/articles', (req, res) => {
   res.json({
     status: 'success',
@@ -52,6 +47,19 @@ app.get('/api/topology', (req, res) => {
     status: 'success',
     topology: newsOrchestrator.getTopology()
   });
+});
+
+// Angular SPA Client-Side Routing Fallback
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api') || req.path.includes('.')) {
+    return next();
+  }
+  const indexPath = path.join(staticPath, 'index.html');
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  }
 });
 
 // Seed initial news run on startup if empty
@@ -75,7 +83,6 @@ wss.on('connection', (ws) => {
   clients.add(ws);
   console.log('[WebSocket] Client connected. Total active clients:', clients.size);
 
-  // Send initial state & topology on connection
   ws.send(JSON.stringify({
     type: 'system_status',
     payload: {
@@ -115,17 +122,17 @@ wss.on('connection', (ws) => {
     }
   });
 
-  ws.on('close', () => {
+  ws.onclose = () => {
     clients.delete(ws);
     console.log('[WebSocket] Client disconnected. Remaining:', clients.size);
-  });
+  };
 });
 
 const PORT = process.env.PORT || 3006;
 server.listen(PORT, () => {
   console.log(`=======================================================`);
   console.log(`🚀 LangGraph Multi-Agent Newsroom Server Running!`);
-  console.log(`📰 Reader Portal (Public):   http://localhost:${PORT}`);
-  console.log(`🎛️ Admin Control Room:      http://localhost:${PORT}/admin.html`);
+  console.log(`📰 Reader Portal (Angular):   http://localhost:${PORT}`);
+  console.log(`🎛️ Admin Control (Angular):  http://localhost:${PORT}/admin`);
   console.log(`=======================================================`);
 });

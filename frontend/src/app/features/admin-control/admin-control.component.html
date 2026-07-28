@@ -1,0 +1,161 @@
+<div class="admin-body-wrapper">
+  <!-- Admin Top Bar -->
+  <header class="navbar admin-navbar">
+    <div class="nav-brand">
+      <span class="logo-icon">🎛️</span>
+      <div class="logo-text">
+        <span class="brand-title">LangGraph <span class="accent-text">Orchestra Control</span></span>
+        <span class="brand-subtitle">Multi-Agent Dispatch & Execution Control Center</span>
+      </div>
+    </div>
+
+    <div class="nav-controls">
+      <div class="status-indicator">
+        <span class="status-dot" [style.backgroundColor]="isConnected() ? '#10b981' : '#ef4444'"></span>
+        <span>{{ isConnected() ? 'Connected Server (LangGraph Ready)' : 'Disconnected' }}</span>
+      </div>
+
+      <a routerLink="/" class="btn btn-primary">
+        <span>📰 View Reader Portal</span>
+      </a>
+    </div>
+  </header>
+
+  <div class="admin-dashboard-container">
+    <!-- Top Control Bar: Assign Tasks to Orchestra -->
+    <section class="admin-dispatch-card">
+      <div class="dispatch-header">
+        <h2>⚡ Dispatch Tasks to AI Agent Orchestra (LangGraph Pipeline)</h2>
+        <span class="badge-langgraph">LangGraph StateGraph Engine</span>
+      </div>
+
+      <div class="dispatch-form">
+        <div class="input-group topic-group">
+          <label for="adminTopicInput">🎯 Target News Query & Topic:</label>
+          <input type="text" id="adminTopicInput" [(ngModel)]="topicInput" placeholder="Enter query for agent orchestra..." />
+        </div>
+
+        <div class="form-row">
+          <div class="input-group">
+            <label for="adminCategorySelect">📂 Domain Specialist Category:</label>
+            <select id="adminCategorySelect" [(ngModel)]="categorySelect">
+              <option value="all">🌟 All 3 Domains (Economy + Politics + Weather)</option>
+              <option value="economy">📊 1. Economy Specialist</option>
+              <option value="politics">🏛️ 2. Politics Specialist</option>
+              <option value="weather">🌤️ 3. Weather & Climate Specialist</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <label for="adminRegionSelect">📍 Target Geographic Region:</label>
+            <select id="adminRegionSelect" [(ngModel)]="regionSelect">
+              <option value="Global">🌍 Global Wire</option>
+              <option value="Asia-Pacific">🌏 Asia-Pacific</option>
+              <option value="Europe">🇪🇺 Europe</option>
+              <option value="Americas">🇺🇸 Americas</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <label for="adminLangSelect">🔤 Output Target Language:</label>
+            <select id="adminLangSelect" [(ngModel)]="langSelect">
+              <option value="en">🇬🇧 English</option>
+              <option value="vi">🇻🇳 Vietnamese</option>
+              <option value="fr">🇫🇷 Français</option>
+              <option value="es">🇪🇸 Español</option>
+              <option value="ja">🇯🇵 日本語</option>
+            </select>
+          </div>
+
+          <button (click)="runPipeline()" class="btn btn-glow">
+            <span>🚀 DISPATCH ORCHESTRA PIPELINE</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Workspace Split: Drag & Drop Canvas (Left) + Terminal & Inspectors (Right) -->
+    <div class="workspace-grid">
+      <!-- Interactive Drag & Drop Node Diagram Canvas -->
+      <section class="canvas-card">
+        <div class="canvas-header">
+          <div>
+            <h3>🎨 LangGraph Interactive Drag & Drop Canvas (Agent Topology)</h3>
+            <p class="canvas-subtitle">Drag and move agent node cards freely. Live glowing SVG paths indicate active data flow.</p>
+          </div>
+
+          <div class="canvas-actions">
+            <button class="btn btn-sm btn-outline" (click)="resetPositions()">🔄 Reset Positions</button>
+            <button class="btn btn-sm btn-outline" (click)="addAgent()">➕ Add Custom Agent</button>
+          </div>
+        </div>
+
+        <!-- Canvas Container -->
+        <div class="canvas-viewport" #canvasViewport (mousemove)="onMouseMove($event)" (mouseup)="onMouseUp()">
+          <!-- Dynamic SVG connector lines -->
+          <svg class="svg-connectors">
+            <path *ngFor="let p of svgPaths()" [attr.d]="p.pathD" [style.stroke]="p.strokeColor" [style.stroke-width]="p.strokeWidth" [style.opacity]="p.opacity"></path>
+          </svg>
+
+          <!-- Agent Nodes -->
+          <div class="nodes-container">
+            <div *ngFor="let node of nodes()" 
+                 class="agent-node"
+                 [class.thinking]="getNodeStatus(node.id) === 'thinking'"
+                 [class.completed]="getNodeStatus(node.id) === 'completed'"
+                 [style.left.px]="node.x"
+                 [style.top.px]="node.y"
+                 [style.border-color]="node.color || '#6366f1'"
+                 (mousedown)="onMouseDown($event, node)">
+              <div class="node-header">
+                <span class="node-avatar">{{ node.avatar }}</span>
+                <div>
+                  <div class="node-title">{{ node.name }}</div>
+                  <div class="node-role">{{ node.type }}</div>
+                </div>
+              </div>
+              <div class="node-status-badge" [style.color]="getStatusColor(getNodeStatus(node.id))">
+                ● {{ getStatusText(getNodeStatus(node.id)) }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Panel: Live Terminal Logs & Agent Inspector -->
+      <section class="inspector-card">
+        <div class="inspector-tabs">
+          <button class="tab-btn" [class.active]="activeTab === 'logs'" (click)="activeTab = 'logs'">💻 Live Terminal Logs</button>
+          <button class="tab-btn" [class.active]="activeTab === 'agents'" (click)="activeTab = 'agents'">🤖 Agent State Inspector</button>
+        </div>
+
+        <!-- Logs View -->
+        <div *ngIf="activeTab === 'logs'" class="tab-content">
+          <div class="terminal-box" #terminalBox>
+            <div *ngFor="let log of logs()" class="log-line" [ngClass]="log.type">
+              [{{ log.timestamp }}] {{ log.message }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Agent Status Cards View -->
+        <div *ngIf="activeTab === 'agents'" class="tab-content">
+          <div class="agent-cards-list">
+            <div *ngFor="let node of nodes()" class="agent-inspector-card">
+              <div class="agent-inspector-left">
+                <span class="avatar-icon">{{ node.avatar }}</span>
+                <div>
+                  <div class="agent-name-label">{{ node.name }}</div>
+                  <div class="agent-type-label">Type: {{ node.type }}</div>
+                </div>
+              </div>
+              <span class="status-pill-badge" [style.color]="getStatusColor(getNodeStatus(node.id))">
+                ● {{ getStatusText(getNodeStatus(node.id)) }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>

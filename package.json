@@ -1,12 +1,14 @@
 {
-  "name": "ai-venture-studio",
+  "name": "worldpulse-news-orchestra",
   "version": "1.0.0",
-  "description": "Multi-agent startup studio orchestrated by Gemini AI",
+  "description": "Multi-agent global intelligence wire orchestrated by LangGraph & Gemini AI",
   "main": "server.js",
   "type": "module",
   "scripts": {
     "start": "node server.js",
-    "dev": "node --watch server.js"
+    "dev": "node --watch server.js",
+    "build:frontend": "cd frontend && npx ng build",
+    "build": "npm run build:frontend"
   },
   "dependencies": {
     "@google/genai": "*",

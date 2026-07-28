@@ -1,0 +1,185 @@
+<div class="light-theme-wrapper">
+  <!-- Top Announcement Bar -->
+  <div class="top-announcement-bar">
+    <div class="announcement-wrapper">
+      <span class="live-wire-tag">LIVE INTELLIGENCE WIRE</span>
+      <div class="ticker-marquee">
+        {{ tickerText() }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Primary Header Navigation -->
+  <header class="site-header">
+    <div class="header-container">
+      <div class="brand-logo">
+        <span class="logo-mark">⚡</span>
+        <div class="brand-info">
+          <span class="brand-name">WorldPulse <span class="brand-badge">WIRE</span></span>
+          <span class="brand-tagline">Real-Time Global News & Verified Intelligence</span>
+        </div>
+      </div>
+
+      <!-- Controls & Live Indicator -->
+      <div class="header-actions">
+        <div class="orchestra-status-pill">
+          <span class="pulse-indicator"></span>
+          <span>{{ wireStatus() }}</span>
+        </div>
+
+        <div class="lang-select-wrapper">
+          <span class="globe-icon">🌐</span>
+          <select [(ngModel)]="currentLanguage" (change)="onLanguageChange()" class="styled-select">
+            <option value="en">English</option>
+            <option value="vi">Vietnamese</option>
+            <option value="fr">Français</option>
+            <option value="es">Español</option>
+            <option value="ja">日本語</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Clean Hero Section with Topic Search -->
+  <section class="hero-orchestra-section">
+    <div class="hero-container">
+      <div class="hero-headline">
+        <span class="section-kicker">GLOBAL INTELLIGENCE NETWORK</span>
+        <h1>Real-Time World News Wire</h1>
+        <p class="hero-description">Stay informed with verified, up-to-the-minute global coverage spanning economic markets, geopolitical developments, and environmental affairs.</p>
+      </div>
+
+      <!-- Search & Topic Query Box -->
+      <div class="query-dispatch-box">
+        <div class="input-wrapper">
+          <span class="search-icon">🔍</span>
+          <input type="text" [(ngModel)]="searchTopic" (keyup.enter)="onSearch()" placeholder="Explore topic (e.g. Global Trade, Semiconductor Industry, Climate Policy, AI Governance...)" />
+        </div>
+        <button (click)="onSearch()" class="btn-dispatch">
+          <span>🚀 Search News</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content Layout -->
+  <main class="content-wrapper">
+    <!-- Category Tabs & Filters -->
+    <div class="filter-toolbar">
+      <div class="topic-tabs">
+        <button class="topic-tab" [class.active]="currentCategory === 'all'" (click)="setCategory('all')">All Top Stories</button>
+        <button class="topic-tab" [class.active]="currentCategory === 'economy'" (click)="setCategory('economy')">📊 Economy & Markets</button>
+        <button class="topic-tab" [class.active]="currentCategory === 'politics'" (click)="setCategory('politics')">🏛️ Politics & World</button>
+        <button class="topic-tab" [class.active]="currentCategory === 'weather'" (click)="setCategory('weather')">🌤️ Weather & Climate</button>
+      </div>
+
+      <div class="filter-controls">
+        <div class="select-box">
+          <span class="label">Region:</span>
+          <select [(ngModel)]="currentRegion" (change)="onRegionChange()">
+            <option value="Global">Global Wire</option>
+            <option value="Asia-Pacific">Asia-Pacific</option>
+            <option value="Europe">Europe</option>
+            <option value="Americas">Americas</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section Header -->
+    <div class="grid-header">
+      <div class="title-group">
+        <h2>Latest Verified Stories</h2>
+        <span class="story-count-badge">{{ filteredArticles().length }} stories</span>
+      </div>
+      <span class="refresh-indicator">Updated continuously</span>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading()" class="loading-state">
+      <div class="spinner-ring"></div>
+      <span>Scouting and verifying global stories...</span>
+    </div>
+
+    <!-- Article Cards Grid -->
+    <div *ngIf="!isLoading()" class="editorial-grid">
+      <div *ngIf="filteredArticles().length === 0" class="no-stories-box">
+        <p class="no-stories-title">No stories found under this filter.</p>
+        <p>Click "Search News" above to fetch fresh coverage!</p>
+      </div>
+
+      <article *ngFor="let art of filteredArticles()" class="editorial-card" (click)="openModal(art)">
+        <div>
+          <div class="card-header-meta">
+            <span class="badge-cat" [style.backgroundColor]="art.cardColor || '#2563eb'">
+              {{ art.cardIcon || '📰' }} {{ art.categoryLabel || art.category }}
+            </span>
+            <span class="badge-region">📍 {{ art.region || 'Global' }}</span>
+          </div>
+          <h3 class="story-title">{{ art.title }}</h3>
+          <p class="story-tldr">{{ art.tldr || art.snippet }}</p>
+        </div>
+
+        <div class="card-footer">
+          <div class="factcheck-badge">
+            <span>✓ {{ art.factCheckRating || 'Verified' }}</span>
+            <span>({{ art.confidenceScore || 96 }}%)</span>
+          </div>
+          <span class="read-link">Read Full Story &rrarr;</span>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <!-- Article Detail Modal -->
+  <div *ngIf="selectedArticle()" class="modal-backdrop" (click)="closeModalOnBackdrop($event)">
+    <div class="modal-dialog">
+      <button class="modal-close" (click)="closeModal()">&times;</button>
+      
+      <div class="modal-header-meta">
+        <span class="badge-cat" [style.backgroundColor]="selectedArticle()?.cardColor || '#2563eb'">
+          {{ selectedArticle()?.cardIcon || '📰' }} {{ selectedArticle()?.categoryLabel || selectedArticle()?.category }}
+        </span>
+        <span class="badge-region">📍 {{ selectedArticle()?.region || 'Global' }}</span>
+        <span class="badge-factcheck">✓ {{ selectedArticle()?.factCheckRating || 'Verified' }} ({{ selectedArticle()?.confidenceScore || 96 }}%)</span>
+      </div>
+
+      <h1 class="article-modal-title">{{ selectedArticle()?.title }}</h1>
+      
+      <div class="article-byline">
+        <span class="source-name">Source: {{ selectedArticle()?.source || 'Orchestra Wire' }}</span> &bull; 
+        <span class="time-stamp">Published recently</span>
+      </div>
+
+      <div class="tldr-highlight-box">
+        <h4>⚡ Executive Summary (TL;DR)</h4>
+        <p>{{ selectedArticle()?.tldr || selectedArticle()?.snippet }}</p>
+      </div>
+
+      <div class="modal-body-content">
+        <h3>📌 Key Takeaways</h3>
+        <ul class="takeaways-bullets">
+          <li *ngFor="let item of selectedArticle()?.keyTakeaways">{{ item }}</li>
+        </ul>
+
+        <h3>🧠 Expert Domain Insights</h3>
+        <p class="expert-analysis-p">{{ selectedArticle()?.expertAnalysis || selectedArticle()?.snippet }}</p>
+      </div>
+
+      <div class="modal-actions-bar">
+        <div class="modal-tags">
+          <span *ngFor="let tag of selectedArticle()?.tags" class="badge-region" style="font-size:0.75rem; margin-right: 0.35rem;">#{{ tag }}</span>
+        </div>
+        <button class="btn-audio" (click)="speakArticle()">🔊 Read Story Aloud</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="footer-container">
+      <p>© 2026 WorldPulse Global Intelligence Wire &bull; Built with Angular 19 & LangGraph AI Orchestra</p>
+    </div>
+  </footer>
+</div>

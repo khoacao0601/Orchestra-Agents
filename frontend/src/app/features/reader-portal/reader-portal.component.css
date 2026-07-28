@@ -1,0 +1,21 @@
+.light-theme-wrapper {
+  font-family: var(--font-sans);
+  background-color: var(--bg-body);
+  color: var(--text-body);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+.no-stories-box {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 4rem;
+  color: var(--text-muted);
+}
+
+.no-stories-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: var(--text-heading);
+}
