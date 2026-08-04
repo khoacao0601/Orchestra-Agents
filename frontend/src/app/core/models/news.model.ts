@@ -1,3 +1,13 @@
+export interface ArticleComment {
+  id: string;
+  articleId: string;
+  userName: string;
+  userAvatar: string;
+  commentText: string;
+  timestamp: string;
+  likesCount: number;
+}
+
 export interface Article {
   id: string;
   title: string;
@@ -17,6 +27,7 @@ export interface Article {
   tags: string[];
   cardColor: string;
   cardIcon: string;
+  comments?: ArticleComment[];
 }
 
 export interface AgentNode {

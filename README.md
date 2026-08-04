@@ -4,6 +4,20 @@ A real-time global news intelligence wire powered by **LangGraph JS (`@langchain
 
 ---
 
+## 🌟 Key Features
+
+- **Multi-Agent News Orchestra**: 6 specialized LangGraph agents (`WebScout`, `RegionFilter`, `TopicSpecialist` [Economy, Politics, Weather], `Translator`, `JournalistPublisher`).
+- **Angular 19 Standalone Architecture**: Built with Standalone Components, Signals, RxJS WebSocket Services, and Angular Router.
+- **Public Reader Portal**: Clean editorial news feed with topic search bar, region & language filters, executive summary modals, and Web Speech API TTS.
+- **💬 Interactive Article Comment Section**:
+  - Full discussion board built into each article modal.
+  - Reader name, avatar badge, comment submission form.
+  - Comment upvoting / liking system with dynamic count updates.
+  - LocalStorage persistence for user comments across sessions.
+- **Admin Orchestra Command Center**: Drag & drop interactive SVG bezier node graph canvas, task dispatcher, and live terminal log console.
+
+---
+
 ## 🏗️ File Structure Map
 
 ```
@@ -48,15 +62,15 @@ Orchestra/
             │
             ├── core/            # Services, Models & State
             │   ├── models/
-            │   │   └── news.model.ts      # TypeScript interfaces & types
+            │   │   └── news.model.ts      # TypeScript interfaces (Article, Comment, Topology)
             │   └── services/
-            │       └── websocket.service.ts # RxJS WebSocket streaming service
+            │       └── websocket.service.ts # RxJS WebSocket & Comment persistence service
             │
             └── features/        # Feature Components
                 ├── reader-portal/
-                │   ├── reader-portal.component.ts   # Public news portal logic
-                │   ├── reader-portal.component.html # Editorial HTML template
-                │   └── reader-portal.component.css  # Reader styles
+                │   ├── reader-portal.component.ts   # Reader portal & comment logic
+                │   ├── reader-portal.component.html # Editorial template with comment board
+                │   └── reader-portal.component.css  # Reader & comment styles
                 └── admin-control/
                     ├── admin-control.component.ts   # Admin control room logic
                     ├── admin-control.component.html # Drag & Drop canvas HTML

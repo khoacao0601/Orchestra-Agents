@@ -126,7 +126,10 @@
             <span>✓ {{ art.factCheckRating || 'Verified' }}</span>
             <span>({{ art.confidenceScore || 96 }}%)</span>
           </div>
-          <span class="read-link">Read Full Story &rrarr;</span>
+          <div class="card-footer-right">
+            <span class="comments-count">💬 {{ getArticleComments(art.id).length }}</span>
+            <span class="read-link">Read Full Story &rarr;</span>
+          </div>
         </div>
       </article>
     </div>
@@ -173,6 +176,50 @@
         </div>
         <button class="btn-audio" (click)="speakArticle()">🔊 Read Story Aloud</button>
       </div>
+
+      <!-- INTERACTIVE COMMENTS SECTION -->
+      <section class="comments-section">
+        <div class="comments-section-header">
+          <h3>💬 Reader Discussion ({{ activeModalComments().length }})</h3>
+        </div>
+
+        <!-- Add New Comment Form -->
+        <div class="add-comment-form">
+          <div class="comment-form-row">
+            <input type="text" [(ngModel)]="newCommentName" placeholder="Your Name (e.g. Alex Morgan)" class="comment-name-input" />
+          </div>
+          <div class="comment-form-row">
+            <textarea [(ngModel)]="newCommentText" placeholder="Share your perspective on this story..." rows="3" class="comment-textarea"></textarea>
+          </div>
+          <button (click)="submitComment()" [disabled]="!newCommentText.trim()" class="btn-post-comment">
+            <span>Post Comment</span>
+          </button>
+        </div>
+
+        <!-- Comments List -->
+        <div class="comments-list">
+          <div *ngIf="activeModalComments().length === 0" class="no-comments-msg">
+            No comments yet. Be the first to share your thoughts!
+          </div>
+
+          <div *ngFor="let cmt of activeModalComments()" class="comment-card">
+            <div class="comment-header">
+              <div class="comment-author-info">
+                <span class="user-avatar-badge">{{ cmt.userAvatar }}</span>
+                <div>
+                  <span class="user-name">{{ cmt.userName }}</span>
+                  <span class="comment-time">{{ cmt.timestamp }}</span>
+                </div>
+              </div>
+              <button (click)="likeComment(cmt.id)" class="btn-like-comment">
+                👍 {{ cmt.likesCount }}
+              </button>
+            </div>
+            <p class="comment-body-text">{{ cmt.commentText }}</p>
+          </div>
+        </div>
+      </section>
+
     </div>
   </div>
 

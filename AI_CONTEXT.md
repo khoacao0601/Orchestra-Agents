@@ -10,8 +10,8 @@
 User / Admin
     │
     ├── [Angular 19 SPA Frontend] (Port 3006)
-    │     ├── Public Reader Portal:  http://localhost:3006/
-    │     └── Admin Control Room:   http://localhost:3006/admin
+    │     ├── Public Reader Portal:  http://localhost:3006/ (Articles, Detail Modals, Comments & Speech TTS)
+    │     └── Admin Control Room:   http://localhost:3006/admin (LangGraph Canvas, Task Dispatcher & Logs)
     │
     └── [Node.js + WebSockets + LangGraph Engine]
           ├── NewsOrchestrator.js
@@ -36,10 +36,28 @@ User / Admin
 | `agents/TopicSpecialistAgent.js` | Agent Node 3 | `TopicSpecialistAgent` | Domain analysis for 3 categories: `'economy'`, `'politics'`, `'weather'`. |
 | `agents/TranslatorAgent.js` | Agent Node 4 | `TranslatorAgent` | Localizes articles into `'en'`, `'vi'`, `'fr'`, `'es'`, `'ja'`. |
 | `agents/JournalistPublisherAgent.js` | Agent Node 5 | `JournalistPublisherAgent` | Formats final story cards (TL;DR, key takeaways, confidence meter, tags) & publishes. |
-| `frontend/src/app/core/models/news.model.ts` | TS Contracts | `Article`, `AgentNode`, `Topology`, `LogEntry` | Angular TypeScript interfaces. |
-| `frontend/src/app/core/services/websocket.service.ts` | Angular Service | `WebSocketService` | RxJS BehaviorSubject stream manager (`articles$`, `topology$`, `logs$`, `agentStates$`, `pipelineStatus$`). |
-| `frontend/src/app/features/reader-portal/` | Angular Reader | `ReaderPortalComponent` | Public editorial news reader with filters, modal popup & speech synthesis TTS. |
+| `frontend/src/app/core/models/news.model.ts` | TS Contracts | `Article`, `ArticleComment`, `AgentNode`, `Topology`, `LogEntry` | Angular TypeScript interfaces including interactive comments. |
+| `frontend/src/app/core/services/websocket.service.ts` | Angular Service | `WebSocketService` | RxJS BehaviorSubject stream manager (`articles$`, `topology$`, `logs$`, `agentStates$`, `pipelineStatus$`). Includes `addComment()`, `likeComment()`, and localStorage comment persistence. |
+| `frontend/src/app/features/reader-portal/` | Angular Reader | `ReaderPortalComponent` | Public editorial news reader with category filters, detail modal, interactive discussion comments & speech synthesis TTS. |
 | `frontend/src/app/features/admin-control/` | Angular Admin | `AdminControlComponent` | Dark cyber command room with SVG drag & drop canvas, task dispatcher, and terminal log console. |
+
+---
+
+## 💬 Comment Model & Storage Contract
+
+```typescript
+export interface ArticleComment {
+  id: string;
+  articleId: string;
+  userName: string;
+  userAvatar: string;
+  commentText: string;
+  timestamp: string;
+  likesCount: number;
+}
+```
+- **Storage Persistence**: Saved in `localStorage.setItem('worldpulse_comments')`.
+- **Real-time Bindings**: Connected to `WebSocketService.articles$` so any added or liked comment instantly updates article card badges and modal comment lists.
 
 ---
 
@@ -65,6 +83,6 @@ User / Admin
 ## ⚙️ Key Rules & Design Contracts
 
 1. **Language Policy**: 100% English across source code, template strings, comments, default dataset, logs, and Web UI.
-2. **Framework Standard**: Angular 19 with Standalone Components (`imports: [CommonModule, FormsModule, RouterLink]`), Signals (`signal()`), and RxJS (`BehaviorSubject`).
+2. **Framework Standard**: Angular 19 with Standalone Components (`imports: [CommonModule, FormsModule]`), Signals (`signal()`, `computed()`), and RxJS (`BehaviorSubject`).
 3. **Execution Safety**: Dual-mode engine. If `GEMINI_API_KEY` is not present in `.env`, agents automatically execute rich simulation mode without throwing runtime errors.
 4. **Build Location**: Angular production bundle builds to `frontend/dist/frontend/browser` and is served statically by Express at `server.js`.

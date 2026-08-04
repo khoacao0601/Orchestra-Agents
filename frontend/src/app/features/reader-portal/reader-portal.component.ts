@@ -1,8 +1,8 @@
-import { Component, OnInit, OnDestroy, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { WebSocketService } from '../../core/services/websocket.service';
-import { Article } from '../../core/models/news.model';
+import { Article, ArticleComment } from '../../core/models/news.model';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -18,12 +18,23 @@ export class ReaderPortalComponent implements OnInit, OnDestroy {
   public currentRegion = 'Global';
   public currentLanguage = 'en';
 
+  public newCommentName = '';
+  public newCommentText = '';
+
   public allArticles = signal<Article[]>([]);
   public filteredArticles = signal<Article[]>([]);
   public selectedArticle = signal<Article | null>(null);
   public isLoading = signal<boolean>(false);
   public tickerText = signal<string>('Fetching real-time global news coverage...');
   public wireStatus = signal<string>('LIVE WIRE UPDATED');
+
+  public activeModalComments = computed<ArticleComment[]>(() => {
+    const art = this.selectedArticle();
+    if (!art) return [];
+    // Find updated article from signal state to get dynamic comment count/likes
+    const current = this.allArticles().find(a => a.id === art.id);
+    return current?.comments || art.comments || [];
+  });
 
   private sub!: Subscription;
 
@@ -85,6 +96,8 @@ export class ReaderPortalComponent implements OnInit, OnDestroy {
 
   public openModal(article: Article): void {
     this.selectedArticle.set(article);
+    this.newCommentName = '';
+    this.newCommentText = '';
   }
 
   public closeModal(): void {
@@ -106,5 +119,25 @@ export class ReaderPortalComponent implements OnInit, OnDestroy {
       utterance.lang = this.currentLanguage === 'vi' ? 'vi-VN' : 'en-US';
       window.speechSynthesis.speak(utterance);
     }
+  }
+
+  public getArticleComments(articleId: string): ArticleComment[] {
+    const art = this.allArticles().find(a => a.id === articleId);
+    return art?.comments || [];
+  }
+
+  public submitComment(): void {
+    const art = this.selectedArticle();
+    if (!art || !this.newCommentText.trim()) return;
+
+    this.wsService.addComment(art.id, this.newCommentName, this.newCommentText);
+    this.newCommentText = '';
+  }
+
+  public likeComment(commentId: string): void {
+    const art = this.selectedArticle();
+    if (!art) return;
+
+    this.wsService.likeComment(art.id, commentId);
   }
 }
