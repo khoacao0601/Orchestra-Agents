@@ -74,7 +74,7 @@ Return JSON format:
           region: art.regionTag || 'Global Wire',
           location: art.location || { country: 'Worldwide', city: 'Global Hub', lat: 20.0, lng: 0.0 },
           impactLevel: art.impactLevel || (i === 0 ? 'Critical' : 'High'),
-          confidenceScore: art.relevanceScore || 96,
+          confidenceScore: art.trustScore || art.confidenceScore || art.relevanceScore || 96,
           factCheckRating: art.factCheckRating || 'Verified',
           source: art.source || 'Orchestra Global Wire',
           publishedAt: art.publishedAt || new Date().toISOString(),
