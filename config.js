@@ -3,18 +3,22 @@ import { GoogleGenAI } from '@google/genai';
 
 dotenv.config();
 
-export const API_KEY = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || '';
+export function getAiKey() {
+  return (process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || '').trim();
+}
 
 let aiClient = null;
-if (API_KEY) {
-  aiClient = new GoogleGenAI({ apiKey: API_KEY });
-}
 
 export function getAiClient() {
-  if (!aiClient && (process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY)) {
-    aiClient = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY });
+  const key = getAiKey();
+  if (key) {
+    if (!aiClient) {
+      console.log(`[Config] GEMINI_API_KEY detected (${key.substring(0, 8)}...). Initializing GoogleGenAI client.`);
+      aiClient = new GoogleGenAI({ apiKey: key });
+    }
+    return aiClient;
   }
-  return aiClient;
+  return null;
 }
 
-export const DEFAULT_MODEL = 'gemini-2.5-flash';
+export const DEFAULT_MODEL = 'gemini-3.6-flash';
