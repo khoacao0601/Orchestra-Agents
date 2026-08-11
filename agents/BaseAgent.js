@@ -42,6 +42,7 @@ export class BaseAgent {
         });
         return mockResult;
       }
+      return null;
     }
 
     try {
