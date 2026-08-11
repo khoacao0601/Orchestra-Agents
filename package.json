@@ -8,7 +8,10 @@
     "start": "node server.js",
     "dev": "node --watch server.js",
     "build:frontend": "cd frontend && npx ng build",
-    "build": "npm run build:frontend"
+    "build": "npm run build:frontend",
+    "test:backend": "vitest run",
+    "test:backend:watch": "vitest",
+    "test": "npm run test:backend"
   },
   "dependencies": {
     "@google/genai": "*",
@@ -19,5 +22,8 @@
     "express": "^4.19.2",
     "rss-parser": "^3.13.0",
     "ws": "^8.17.0"
+  },
+  "devDependencies": {
+    "vitest": "^4.1.10"
   }
 }

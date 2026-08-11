@@ -31,11 +31,12 @@ User / Admin
 | `langgraph/newsroomState.js` | LangGraph State | `NewsroomStateAnnotation` | Defines State schema (`topic`, `targetCategory`, `targetRegion`, `targetLanguage`, `rawArticles`, `filteredArticles`, `topicInsights`, `translatedArticles`, `publishedArticles`, `activeNodes`, `logs`). |
 | `langgraph/newsroomGraph.js` | LangGraph Builder | `createNewsroomGraph()` | Compiles `StateGraph` linking all agent nodes with conditional category edges. |
 | `agents/BaseAgent.js` | Base Agent | `BaseAgent` | Handles Gemini API `generateContent` calls with fallback to `mockResponseHandler` when key is absent. |
-| `agents/WebScoutAgent.js` | Agent Node 1 | `WebScoutAgent` | Fetches Google News RSS feeds & extracts raw articles. |
-| `agents/RegionFilterAgent.js` | Agent Node 2 | `RegionFilterAgent` | Evaluates geo region tags, coordinates, and relevance scores. |
-| `agents/TopicSpecialistAgent.js` | Agent Node 3 | `TopicSpecialistAgent` | Domain analysis for 3 categories: `'economy'`, `'politics'`, `'weather'`. |
-| `agents/TranslatorAgent.js` | Agent Node 4 | `TranslatorAgent` | Localizes articles into `'en'`, `'vi'`, `'fr'`, `'es'`, `'ja'`. |
-| `agents/JournalistPublisherAgent.js` | Agent Node 5 | `JournalistPublisherAgent` | Formats final story cards (TL;DR, key takeaways, confidence meter, tags) & publishes. |
+| `agents/WebScoutAgent.js` | Agent Node 1 | `WebScoutAgent` | Fetches Google News RSS feeds, extracts raw articles, and executes `fact-checking-skill`. |
+| `skills/fact-checking-skill/` | Agentic Skill | `SKILL.md`, `fact_checker.py` | Automated fact-checking & anti-fake-news engine. Queries Wikipedia REST API & Google Fact Check API to calculate Trust Score (0-100%). |
+| `RegionFilterAgent.js` | Agent Node 2 | `RegionFilterAgent` | Evaluates geo region tags, coordinates, and relevance scores. |
+| `TopicSpecialistAgent.js` | Agent Node 3 | `TopicSpecialistAgent` | Domain analysis for 3 categories: `'economy'`, `'politics'`, `'weather'`. |
+| `TranslatorAgent.js` | Agent Node 4 | `TranslatorAgent` | Localizes articles into `'en'`, `'vi'`, `'fr'`, `'es'`, `'ja'`. |
+| `JournalistPublisherAgent.js` | Agent Node 5 | `JournalistPublisherAgent` | Formats final story cards (TL;DR, key takeaways, confidence meter/trust score, tags) & publishes. |
 | `frontend/src/app/core/models/news.model.ts` | TS Contracts | `Article`, `ArticleComment`, `AgentNode`, `Topology`, `LogEntry` | Angular TypeScript interfaces including interactive comments. |
 | `frontend/src/app/core/services/websocket.service.ts` | Angular Service | `WebSocketService` | RxJS BehaviorSubject stream manager (`articles$`, `topology$`, `logs$`, `agentStates$`, `pipelineStatus$`). Includes `addComment()`, `likeComment()`, and localStorage comment persistence. |
 | `frontend/src/app/features/reader-portal/` | Angular Reader | `ReaderPortalComponent` | Public editorial news reader with category filters, detail modal, interactive discussion comments & speech synthesis TTS. |
@@ -86,3 +87,18 @@ export interface ArticleComment {
 2. **Framework Standard**: Angular 19 with Standalone Components (`imports: [CommonModule, FormsModule]`), Signals (`signal()`, `computed()`), and RxJS (`BehaviorSubject`).
 3. **Execution Safety**: Dual-mode engine. If `GEMINI_API_KEY` is not present in `.env`, agents automatically execute rich simulation mode without throwing runtime errors.
 4. **Build Location**: Angular production bundle builds to `frontend/dist/frontend/browser` and is served statically by Express at `server.js`.
+
+---
+
+## 🛡️ Agentic Skills Framework (`skills/fact-checking-skill`)
+
+The newsroom agents are equipped with domain-specific **Agentic Skills** residing in `skills/<skill-name>/`:
+
+- **Applied Agent**: `WebScoutAgent` (`agents/WebScoutAgent.js`)
+- **Skill Engine**: `skills/fact-checking-skill/scripts/fact_checker.py`
+- **Capabilities**:
+  - Entity & Claim Extraction (Named Entities, Financial Statistics, Dates)
+  - Wikipedia REST API & Google Fact Check Claim API cross-referencing
+  - Anti-Fake News & Sensationalism Heuristic Detection
+  - Trust Score Calculation (0 - 100%) & Fact Check Rating (`Verified`, `High Confidence`, `Needs Revision`, `Suspicious`, `Fake News Alert`)
+- **Execution**: Python process spawned via `WebScoutAgent.applyFactCheckingSkill()`, with built-in JS engine fallback for zero-downtime execution.
