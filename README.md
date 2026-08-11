@@ -7,6 +7,7 @@ A real-time global news intelligence wire powered by **LangGraph JS (`@langchain
 ## 🌟 Key Features
 
 - **Multi-Agent News Orchestra**: 6 specialized LangGraph agents (`WebScout`, `RegionFilter`, `TopicSpecialist` [Economy, Politics, Weather], `Translator`, `JournalistPublisher`).
+- **🛡️ Agentic Skills Capability**: Integrated `fact-checking-skill` directly for `WebScoutAgent` using Python engines to verify claims against Wikipedia API, Google Fact Check API, calculate Trust Scores (0-100%), and filter fake news.
 - **Angular 19 Standalone Architecture**: Built with Standalone Components, Signals, RxJS WebSocket Services, and Angular Router.
 - **Public Reader Portal**: Clean editorial news feed with topic search bar, region & language filters, executive summary modals, and Web Speech API TTS.
 - **💬 Interactive Article Comment Section**:
@@ -31,11 +32,23 @@ Orchestra/
 │
 ├── agents/                      # Specialized Autonomous AI Agents
 │   ├── BaseAgent.js             # Base agent class with Gemini API & Demo fallback
-│   ├── WebScoutAgent.js         # Real-time RSS & Web news crawler
+│   ├── WebScoutAgent.js         # Real-time RSS crawler & fact-checking-skill invoker
 │   ├── RegionFilterAgent.js     # Geographic location & relevance analyst
 │   ├── TopicSpecialistAgent.js  # Domain specialists (Economy, Politics, Weather)
 │   ├── TranslatorAgent.js       # Multi-lingual polyglot localization agent
 │   └── JournalistPublisherAgent.js # Chief editor & broadcast publisher agent
+│
+├── skills/                      # Agentic Skills & Tooling Framework
+│   └── fact-checking-skill/     # Fact checking & Anti-Fake-News Skill
+│       ├── SKILL.md             # Main skill instructions & schema definition
+│       ├── scripts/
+│       │   ├── fact_checker.py  # Python claim verification & Wikipedia/FactCheck API engine
+│       │   └── process_data.py  # Markdown audit report generator
+│       ├── references/
+│       │   ├── api-guide.md     # Wikipedia REST API & Google Fact Check API guide
+│       │   └── trust-score-rules.md # Trust score weights & fake news heuristic rules
+│       └── assets/
+│           └── verification-report-template.md # Editorial audit report template
 │
 ├── core/                        # Core Orchestrator Engine
 │   └── NewsOrchestrator.js      # News pipeline runner & in-memory cache manager
@@ -82,9 +95,26 @@ Orchestra/
 ## ⚡ Tech Stack
 
 - **AI & Multi-Agent Framework**: `@langchain/langgraph`, `@langchain/core`, `@google/genai` (Gemini 2.5 Flash)
+- **Agentic Skills & Verification**: Python 3, Wikipedia REST API, Google Fact Check Tools API, Heuristic Fake News Detection
 - **Backend**: Node.js, Express, `ws` (WebSockets), `rss-parser`, `dotenv`
 - **Frontend**: Angular 19 (Standalone Components, Signals, RxJS, Angular Router)
 - **Design System**: Dual-Theme UI (Bright Editorial Theme for Readers & Dark Cyber Theme for Admin)
+
+---
+
+## 🛡️ Agentic Skills Architecture (`fact-checking-skill`)
+
+The newsroom pipeline equips agents with domain capabilities via modular skill packages in `skills/`:
+
+### 🛡️ `fact-checking-skill` (Applied Agent: `WebScoutAgent`)
+- **Main Skill Spec**: [`skills/fact-checking-skill/SKILL.md`](file:///C:/Learning/Vibe-coding/Orchestra/skills/fact-checking-skill/SKILL.md)
+- **Python Engine**: [`skills/fact-checking-skill/scripts/fact_checker.py`](file:///C:/Learning/Vibe-coding/Orchestra/skills/fact-checking-skill/scripts/fact_checker.py)
+- **Features**:
+  - **Entity & Claim Extraction**: Extracts named entities, statistical figures ($50B, 45%), dates/years.
+  - **API Cross-Checking**: Queries Wikipedia REST API & Google Fact Check Claim API.
+  - **Anti-Fake-News Filter**: Detects clickbait, exaggeration, or numerical anomalies.
+  - **Trust Score Rating (0-100%)**: Assigns ratings (`Verified`, `High Confidence`, `Needs Revision`, `Suspicious`, `Fake News Alert`).
+- **Resilience**: Executes via Python CLI script with automatic JS fallback engine if Python binary is unavailable.
 
 ---
 
